@@ -52,15 +52,7 @@ date_column = None
 @st.cache_data
 def load_demo_data():
     try:
-        file_id = "1Pdfq7Cwk_1x5Z7uicwzPd-0QaB07xQF-"
-        url = f"https://drive.google.com/uc?id={file_id}"
-
-        # حمل الملف مؤقتاً
-        gdown.download(url, "data.csv", quiet=False)
-
-        # اقرأ الملف
-        df = pd.read_csv("data.csv")
-        st.dataframe(df)
+        df = pd.read_csv("train_small.csv")
         df.drop_duplicates(inplace=True)
         
         # Check for date column with different possible names
