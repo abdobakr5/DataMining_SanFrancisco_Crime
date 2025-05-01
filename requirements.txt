@@ -1,1 +1,8 @@
 streamlit
+pandas
+numpy
+matplotlib.pyplot
+seaborn
+datetime
+plotly.express
+plotly.graph_objects
