@@ -6,6 +6,7 @@ import seaborn as sns
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
+import gdown
 
 # Set page config
 st.set_page_config(
@@ -49,15 +50,35 @@ date_column = None
 # Demo data loading function
 @st.cache_data
 def load_demo_data():
-    data = pd.read_csv("train.csv")
-    df = pd.DataFrame(data)
-    df.drop_duplicates(inplace = True)
-    df['Dates'] = pd.to_datetime(df['Dates'])
-    df['Hour'] = df['Dates'].dt.hour
-    df['Month'] = df['Dates'].dt.month
-    df['Year'] = df['Dates'].dt.year
-    df['day'] = df['Dates'].dt.day
-    return df
+    try:
+        file_id = "1Pdfq7Cwk_1x5Z7uicwzPd-0QaB07xQF-"
+        url = f"https://drive.google.com/uc?id={file_id}"
+
+        # حمل الملف مؤقتاً
+        gdown.download(url, "data.csv", quiet=False)
+
+        # اقرأ الملف
+        df = pd.read_csv("data.csv")
+        st.dataframe(df)
+        df.drop_duplicates(inplace=True)
+        
+        # Check for date column with different possible names
+        date_columns = ['Dates', 'Date', 'date', 'DATETIME', 'datetime']
+        date_column = next((col for col in date_columns if col in df.columns), None)
+        
+        if date_column:
+            df[date_column] = pd.to_datetime(df[date_column])
+            df['Hour'] = df[date_column].dt.hour
+            df['Month'] = df[date_column].dt.month
+            df['Year'] = df[date_column].dt.year
+            df['day'] = df[date_column].dt.day
+        else:
+            st.warning("No date column found in the dataset. Time-based analysis will not be available.")
+            
+        return df
+    except Exception as e:
+        st.error(f"Error loading demo data: {str(e)}")
+        return pd.DataFrame()  # Return empty dataframe on error
 
 # Load data
 if uploaded_file is not None:
