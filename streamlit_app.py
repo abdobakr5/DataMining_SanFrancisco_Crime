@@ -6,10 +6,8 @@ import seaborn as sns
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
-import gdown
 
 # Set page config
-#test comment
 st.set_page_config(
     page_title="SF Crime Data Visualization",
     page_icon="🚨",
@@ -51,27 +49,15 @@ date_column = None
 # Demo data loading function
 @st.cache_data
 def load_demo_data():
-    try:
-        df = pd.read_csv("train_small.csv")
-        df.drop_duplicates(inplace=True)
-        
-        # Check for date column with different possible names
-        date_columns = ['Dates', 'Date', 'date', 'DATETIME', 'datetime']
-        date_column = next((col for col in date_columns if col in df.columns), None)
-        
-        if date_column:
-            df[date_column] = pd.to_datetime(df[date_column])
-            df['Hour'] = df[date_column].dt.hour
-            df['Month'] = df[date_column].dt.month
-            df['Year'] = df[date_column].dt.year
-            df['day'] = df[date_column].dt.day
-        else:
-            st.warning("No date column found in the dataset. Time-based analysis will not be available.")
-            
-        return df
-    except Exception as e:
-        st.error(f"Error loading demo data: {str(e)}")
-        return pd.DataFrame()  # Return empty dataframe on error
+    data = pd.read_csv("train_small.csv")
+    df = pd.DataFrame(data)
+    df.drop_duplicates(inplace = True)
+    df['Dates'] = pd.to_datetime(df['Dates'])
+    df['Hour'] = df['Dates'].dt.hour
+    df['Month'] = df['Dates'].dt.month
+    df['Year'] = df['Dates'].dt.year
+    df['day'] = df['Dates'].dt.day
+    return df
 
 # Load data
 if uploaded_file is not None:
@@ -207,11 +193,40 @@ with tab2:
             st.plotly_chart(fig, use_container_width=True)
     
     else:  # Map
-        st.info("In a real application, this would display a map of San Francisco with crime hotspots. For the demo, we're showing a placeholder.")
+        # Map visualization options
+        map_style = st.selectbox(
+            "Map Style",
+            ["open-street-map", "carto-positron", "carto-darkmatter", "stamen-terrain", "stamen-toner", "stamen-watercolor"]
+        )
         
-        # Placeholder for map
-        st.image("https://via.placeholder.com/800x400?text=San+Francisco+Crime+Map", use_column_width=True)
-        st.write("Note: To implement an actual map, you would need geographical coordinates (latitude/longitude) in your dataset and use libraries like folium or pydeck.")
+        # Validate coordinates
+        if 'X' not in df.columns or 'Y' not in df.columns:
+            st.error("X and Y coordinates are required for map visualization. Please ensure your data contains these columns.")
+        else:
+            # Calculate counts for each location
+            location_counts = df.groupby(['X', 'Y', 'Category']).size().reset_index(name='Count')
+            
+            # Create the map
+            fig = px.scatter_mapbox(
+                location_counts,
+                lat="Y",  # Y coordinate as latitude
+                lon="X",  # X coordinate as longitude
+                color="Category",
+                size="Count",
+                hover_name="Category",
+                hover_data=["Count"],
+                zoom=11,
+                height=600,
+                title="Crime Hotspots in San Francisco"
+            )
+            
+            fig.update_layout(
+                mapbox_style=map_style,
+                mapbox_center={"lat": 37.7749, "lon": -122.4194},  # San Francisco coordinates
+                margin={"r":0,"t":30,"l":0,"b":0}
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
 
 with tab3:
     st.markdown('<p class="subheader">Crime Analysis by Time</p>', unsafe_allow_html=True)
