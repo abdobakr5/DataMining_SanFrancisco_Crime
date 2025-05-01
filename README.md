@@ -11,10 +11,6 @@ This interactive dashboard allows users to explore and visualize crime data in S
 - **Time Analysis**: Analyze crime data by hour of the day, day of the week, or month.
 - **Additional Insights**: Explore custom insights such as crime category distribution across districts or time analysis for selected crime categories.
 
-## Demo
-
-![Demo Screenshot](assets/demo_screenshot.png)
-
 ## Prerequisites
 
 - Python 3.7+
