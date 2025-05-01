@@ -226,7 +226,7 @@ if df is not None:
             # Map visualization options
             map_style = st.selectbox(
                 "Map Style",
-                ["open-street-map", "carto-positron", "carto-darkmatter", "stamen-terrain", "stamen-toner", "stamen-watercolor"]
+                ["open-street-map", "carto-positron", "carto-darkmatter"]
             )
             
             # Validate coordinates
