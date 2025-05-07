@@ -107,7 +107,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - This project uses the [Plotly](https://plotly.com) library for interactive visualizations.
 - Special thanks to the [San Francisco Police Department](https://data.sfgov.org) for providing the crime data.
 
-## Contact
+## Contact us
 
 For any questions or feedback, please open an issue on GitHub or reach out to [bedobakr65@gmail.com](mailto:bedobakr65@gmail.com).
 
